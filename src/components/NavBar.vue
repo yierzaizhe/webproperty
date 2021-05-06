@@ -1,0 +1,156 @@
+<template>
+    <el-menu
+            class="el-menu-demo"
+            mode="horizontal"
+            @select="handleSelect"
+            background-color="#30373e"
+            text-color="#fff"
+            active-text-color="#ffd04b"
+            style="position: fixed;
+    z-index:11;
+    width: 100%"
+    >
+        <el-menu-item index="" @click="changeshowbar" style="width: 125px;"
+        >XX物业系统</el-menu-item
+        >
+
+        <el-submenu index="">
+            <template slot="title">导航</template>
+            <el-menu-item index="/dashboard/community">管理后台</el-menu-item>
+            <el-menu-item index="/user">用户中心</el-menu-item>
+        </el-submenu>
+
+        <el-menu-item index="about" class="hidden-xs-only">关于</el-menu-item>
+        <el-menu-item class="block" style="float:right;">
+            <el-dropdown>
+                <!--右下角蓝色的下拉菜单，使用原生dropdownmenu实现-->
+                <el-avatar size="medium" :src="circleUrl"></el-avatar>
+                <el-dropdown-menu slot="dropdown">
+                    <router-link to="/login"
+                    ><el-dropdown-item v-show="!userinfo.sub"
+                    >登录</el-dropdown-item
+                    ></router-link>
+                    <span @click="logOut()">
+            <el-dropdown-item v-show="userinfo.sub || userinfo.cno"
+            >注销</el-dropdown-item
+            >
+          </span>
+                </el-dropdown-menu>
+            </el-dropdown>
+        </el-menu-item>
+        <el-menu-item
+                class="hidden-xs-only"
+                style="float: right; cursor: default;"
+                disabled
+        >
+            <!--判断是否登录提示-->
+            <span v-if="userinfo.sub != null">用户名：{{ userinfo.sub }}</span>
+            <span v-else-if="userinfo.cno != null">住户：{{ userinfo.cname }}</span>
+            <span v-else>请先登录！</span>
+        </el-menu-item>
+    </el-menu>
+</template>
+
+<script>
+    import Event from "../util/public"
+    export default {
+        name: "NavBar",
+        data() {
+            return {
+                showbar: true,
+                userinfo: {
+                    cno: null,
+                    eid: null
+                },
+                circleUrl:
+                    "./static/img/user.png"
+                // activeIndex2: "/dashboard/show"
+            };
+        },
+        methods: {
+            logOut() {
+                console.log("触发注销");
+                let that = this;
+                // 在Vue中this始终指向Vue，但axios中this为undefined
+                // 通过 let that = this
+                // 将this保存在that中，再在函数中使用that均可
+                /*axios
+                // eslint-disable-next-line no-undef
+                    .get(ylz_conf.BaseUrl + "/api/logout")
+                    .catch(function(error) {
+                        console.log("服务端错误改为本地强行注销：", error);
+                    })
+                    .finally(function() {
+                        // 本地存储中删除 token
+                        window.localStorage.removeItem("Authorization");
+                        console.log("服务器 token 和本地 cookie 注销成功");
+                        that.$message({
+                            showClose: true,
+                            message: "注销成功！请重新登录",
+                            offset: 66,
+                            type: "success"
+                        });
+                        //清除用户信息
+                        that.userinfo = {
+                            cno: null,
+                            eid: null
+                        };
+                        that.$router.push("/login");
+                    });*/
+            },
+            handleSelect(key, keyPath) {
+                // 新标签页跳转关于
+                if (key == "about") {
+                    const h = this.$createElement;
+
+                    this.$notify({
+                        title: '作者信息：',
+                        message: h('i', { style: 'color: teal'}, '伊林章 1713011146 版本：1.0')
+                    });
+                }else{
+                    this.$router.push({ path: key });
+                }
+                // console.log(key, keyPath);
+            },
+            changeshowbar() {
+                this.showbar = !this.showbar;
+                console.log("是否显示侧边栏： " + this.showbar);
+                Event.$emit("isshowbar", this.showbar);
+            },
+            getUserInfo() {
+                try {
+                    console.log("导航栏更新用户信息");
+                    if (this.$store.state.Authorization == null) {
+                        this.userinfo = {
+                            cno: null,
+                            eid: null
+                        };
+                    } else {
+                        this.userinfo = JSON.parse(this.$store.state.Authorization);
+                        let jwt = require("jsonwebtoken");
+                        console.log(jwt.decode(this.userinfo))
+                        console.log(jwt.decode(this.userinfo))
+                        this.userinfo =jwt.decode(this.userinfo)
+                    }
+                    // console.log(this.userinfo);
+                } catch (e) {
+                    console.log("未获取到 LocalStorage 中的存储信息！");
+                }
+            }
+        },
+        watch: {
+            // 登陆后刷新导航栏用户名
+            "$store.state.Authorization": function() {
+                this.getUserInfo();
+                console.log("监听到用户信息变化");
+            }
+        },
+        created() {
+            // 登陆后刷新导航栏用户名
+            this.getUserInfo();
+        }
+    };
+</script>
+
+<style scoped></style>
+
