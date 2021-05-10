@@ -73,15 +73,19 @@
                 </el-submenu>
                 <el-menu-item >
                     <i class="el-icon-menu"></i>
-                    <span slot="title">导航二</span>
+                    <span slot="title">客户信息</span>
                 </el-menu-item>
-                <el-menu-item  disabled>
+                <el-menu-item  >
                     <i class="el-icon-document"></i>
-                    <span slot="title">导航三</span>
+                    <span slot="title">车辆管理</span>
                 </el-menu-item>
                 <el-menu-item >
                     <i class="el-icon-setting"></i>
-                    <span slot="title">导航四</span>
+                    <span slot="title">采购库存</span>
+                </el-menu-item>
+                <el-menu-item disabled>
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">开发中~~</span>
                 </el-menu-item>
             </el-menu>
         </el-aside>
