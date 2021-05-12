@@ -134,7 +134,7 @@
                                         type: "success"
                                     });
                                     //登录成功后跳转
-                                    that.$router.push("/dashboard/community");
+                                    that.$router.push("/dashboard/show");
                                 } else if(res.errorCode == 2003){
                                     that.$message({
                                         showClose: true,

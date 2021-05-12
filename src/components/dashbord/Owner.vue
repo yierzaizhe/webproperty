@@ -8,7 +8,6 @@
         <el-filter
                 :data="filterInfo.data"
                 :field-list="filterInfo.fieldList"
-                :list-type-info="listTypeInfo"
                 @handleFilter="handleFilter"
                 @handleReset="handleReset"
                 @handleEvent="handleEvent"
@@ -18,23 +17,28 @@
                 :data="tableData"
                 style="width: 100%"
                 height="400">
-
-            <el-table-column
-                    label="楼号">
-                <template slot-scope="scope">
-                    <span >{{ scope.row.buildingName}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column
-                    label="单元">
-                <template slot-scope="scope">
-                    <span >{{ scope.row.unit}} 单元</span>
-                </template>
-            </el-table-column>
-            <el-table-column
-                    label="层数">
-                <template slot-scope="scope">
-                    <span >{{ scope.row.floor}}层</span>
+            <el-table-column type="expand">
+                <template slot-scope="props">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="身份证:">
+                            <span>{{ props.row.idCard }}</span>
+                        </el-form-item>
+                        <el-form-item label="职业:">
+                            <span>{{ props.row.profession }}</span>
+                        </el-form-item>
+                        <el-form-item label="备注:">
+                            <span>{{ props.row.remark }}</span>
+                        </el-form-item>
+                        <el-form-item label="入住时间:">
+                            <span>{{ props.row.createTime }}</span>
+                        </el-form-item>
+                        <el-form-item label="更新时间:">
+                            <span>{{ props.row.updateTime }}</span>
+                        </el-form-item>
+                        <el-form-item label="出生日期:">
+                            <span>{{ props.row.birthday }}</span>
+                        </el-form-item>
+                    </el-form>
                 </template>
             </el-table-column>
             <el-table-column
@@ -44,40 +48,30 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    label="是否居住"
+                    label="姓名">
+                <template slot-scope="scope">
+                    <span >{{ scope.row.name}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sex" width="120" label="性别" :formatter="sexFormat">
+            </el-table-column>
+            <el-table-column
+                    label="联系方式">
+                <template slot-scope="scope">
+                    <span >{{ scope.row.telephone}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="是否户主"
                     width="100">
                 <template slot-scope="scope">
                     <el-switch
-                            v-model="scope.row.isLive"
+                            v-model="scope.row.isMain"
                             disabled>
                     </el-switch>
                 </template>
             </el-table-column>
-            <el-table-column
-                    label="描述"
-            width="350">
-                <template slot-scope="scope">
-                    <span >{{ scope.row.description}}</span>
-                </template>
-            </el-table-column>
-            <!--<el-table-column
-                    label="房型介绍"
-                    width="180">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="dialogVisible = true">点击查看详情</el-button>
-                    <el-dialog
-                            title="描述"
-                            :visible.sync="dialogVisible"
-                            width="30%"
-                            :before-close="handleClose">
-                        <span>{{ scope.row.description}}</span><br/>
-                        <span slot="footer" class="dialog-footer">
-                            <el-button @click="dialogVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-                        </span>
-                    </el-dialog>
-                </template>
-            </el-table-column>-->
+            <el-table-column prop="type" width="120" label="居住类型" :formatter="typeFormat"></el-table-column>
             <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
                     <el-button
@@ -88,19 +82,9 @@
                             type="danger"
                             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 
-                    <!--<el-button
-                            size="mini"
-                            type="success"
-                            @click.native.prevent="handleLive(scope.$index, scope.row)"
-                    >入住</el-button>
-                    <el-button
-                            size="mini"
-                            type="danger"
-                           >添加人员</el-button>-->
                 </template>
             </el-table-column>
         </el-table>
-
         <div style="margin-top: 20px">
             <el-pagination
                     @current-change="handleCurrentChange"
@@ -110,99 +94,103 @@
                     :total=total>
             </el-pagination>
         </div>
-        <UpdateHouse v-if="showDialog"
-                        ref="updateHouse"
+        <UpdateOwner v-if="showDialog"
+                        ref="updateOwner"
+                       :handel-type = 'handelType'
                         :dialog-title="dialogTitle"
                         :item-info="tableItem"
-                        :handel-type = 'handelType'
-                        @closeDialog="closeDialog"></UpdateHouse>
-
+                        @closeDialog="closeDialog"></UpdateOwner>
     </div>
 </template>
 
 <script>
-    import UpdateHouse from "./UpdateHouse";
+    import UpdateOwner from "./UpdateOwner";
     export default {
-        name: "HouseProperty",
+        name: "Owner",
         components: {
-            UpdateHouse,
+          UpdateOwner
         },
         data() {
             return {
-                buildList: [],
                 dialogVisible: false,
                 tableData: [], //数据
+                timeRange: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)], //时间范围
+                input: '',
+                multipleSelection: [], //选择框
 
                 //分页数据
-                pageSize: 5,
+                pageSize: 6,
                 currentPage: 1,
                 totalPage: 0,
                 total: 0,
 
                 //表单
                 form: {
-                    buildingName:'',
-                    kind: '',
-                    startTime: '',
-                    endTime: '',
                     houseCode: '',
-                    ownerName: '',
-                    unit: '',
+                    name:'',
+                    date: '',
+                    startTime: '',
+                    endTime: ''
                 },
                 filterInfo: {
                     // 搜索字段
                     data: {
-                        buildingName: null,
+                        name: null,
+                        houseCode: null,
                         startTime: null,
                         endTime: null,
-                        kind: null,
-                        houseCode: null,
-                        ownerName: null,
-                        unit: null
                     },
                     // 条件配置项
                     fieldList: [
-                        { label: '楼栋', type: 'input', value: 'buildingName' },
-                        { label: '单元', type: 'input', value: 'unit' },
                         { label: '门牌号', type: 'input', value: 'houseCode' },
+                        { label: '姓名', type: 'input', value: 'name' },
+                        { label: '居住时间', type: 'date', value: 'startTime', dateType: 'datetime', clearable: true  },
+                        { label: '结束时间', type: 'date', value: 'endTime', dateType: 'datetime', clearable: true  },
+
                     ]
                 },
-                // 下拉数据配置项
-                listTypeInfo: {
-                    liveTypeList: [
-                        { id: 0, name: 'NULL' },
-                        { id: 1, name: 'BUY' },
-                        { id: 2, name: 'RENT' }
-                    ]
-                },
-                handelType: null, //操作的类型 true更新 false新增
                 showDialog: false, //更改组件的显示
+                handelType: null,
                 dialogTitle: '', //弹窗的title
                 tableItem: { //用来更新 新增
                     id: "",
-                    buildingId: "",
-                    buildingName: "",
-                    unit: "",
-                    floor: "",
-                    houseCode: "",
-                    isLive: "",
-                    area: "",
+                    house_code: "",
+                    name: "",
+                    sex: "",
+                    id_card: "",
+                    telephone: "",
+                    is_main: "",
+                    type: "",
+                    profession: "",
+                    remark: "",
+                    create_time: "",
+                    update_time: "",
+                    birthday: "",
                 },
-
-            };
+            }
         },
         methods: {
+            sexFormat(row,column){
+                if(row.sex == 1 ){
+                    return '男'
+                }else {
+                    return '女'
+                }
+            },
+            typeFormat(row,column){
+                if(row.type == 1 ){
+                    return '租住'
+                }else {
+                    return '购买'
+                }
+            },
             //搜索
+            /**搜索 */
             handleFilter (row) {
-                //遍历数组
-                /*let kindType = this.listTypeInfo.liveTypeList.map((currentValue) => {
-                    if (currentValue.id == row.kind){
-                        return currentValue.name
-                    }
-                })*/
-                this.form.buildingName = row.buildingName;
+                this.form.name = row.name;
                 this.form.houseCode = row.houseCode;
-                this.form.unit = row.unit;
+                this.form.startTime = row.startTime;
+                this.form.endTime = row.endTime;
                 this.getList()
             },
             /**重置 */
@@ -223,27 +211,19 @@
             //查找
             getList(){
                 let that = this
-                this.$http.post('/house/search',
+                this.$http.post('/owner/search',
                     {
                         currentPage: that.currentPage+"",
                         pageSize: that.pageSize+"",
-                        buildingName: that.form.buildingName,
+                        startTime: that.form.startTime,
+                        endTime: that.form.endTime,
+                        name: that.form.name,
                         houseCode: that.form.houseCode,
-                        unit: that.form.unit,
                     }).then( res => {
                     if(res.errorCode == 200){
                         that.tableData = res.data
                         that.totalPage = res.totalPages
                         that.total = res.total
-                        if(res.data.length <=0){
-                            that.$message({
-                                showClose: true,
-                                message: '查询结果为空，请重试！',
-                                offset: 66,
-                                type: "error"
-                            });
-
-                        }
                     }else {
                         that.$message({
                             showClose: true,
@@ -264,7 +244,7 @@
                 })
             },
             async handleDelete(index,row){
-                const confirmResult = await this.$confirm('此操作将永久删除该房信息, 是否继续?', '提示', {
+                const confirmResult = await this.$confirm('此操作将永久删除该楼信息, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -275,7 +255,7 @@
                 }
                 // console.log('确认了删除')
                 let that = this
-                this.$http.post('/house/delete',{
+                this.$http.post('/owner/delete',{
                     id: row.id,
                 }).then( res => {
                     if(res.errorCode == 200){
@@ -291,34 +271,40 @@
                     }
                 }).catch( err => {
                     that.$router.push('/dashboard/error')
+
                 })
             },
             // 添加操作
             addItem() {
                 this.tableItem = {
                     id: "",
+                    houseCode: "",
                     name: "",
-                    totalUnit: "",
-                    totalLevel: "",
-                    existHouseholds: "",
-                    totalHouseholds: "",
-                    description: "",
+                    sex: true,
+                    idCard: "",
+                    telephone: "",
+                    isMain: false,
+                    type: false,
+                    profession: "",
+                    remark: "",
                     createTime: "",
+                    updateTime: "",
+                    birthday: "",
                 };
                 this.dialogTitle = "添加信息";
-                this.showDialog = true;
                 this.handelType = false;
+                this.showDialog = true;
                 this.$nextTick(() => {
-                    this.$refs["updateHouse"].showDialog = true;
+                    this.$refs["updateOwner"].showDialog = true;
                 });
             },
             handleEdit(row){
                 this.showDialog = true
                 this.tableItem = row;
-                this.dialogTitle = "编辑";
                 this.handelType = true;
+                this.dialogTitle = "编辑";
                 this.$nextTick(() => {
-                    this.$refs["updateHouse"].showDialog = true;
+                    this.$refs["updateOwner"].showDialog = true;
                 });
             },
             // 关闭操作
@@ -334,7 +320,6 @@
             this.getList();
         }
     }
-
 </script>
 
 <style scoped>

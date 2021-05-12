@@ -14,67 +14,68 @@
                     class="demo-form-inline"
                     label-width="80px"
             >
-                <!--<el-form-item label="入住时间" prop="startTime" required>
-                    <el-date-picker
-                            value-format="yyyy-MM-dd hh:mm:ss"
-                            v-model="formInfo.startTime"
-                            type="datetime"
-                            placeholder="选择日期时间"
-                            default-time="12:00:00">
-                    </el-date-picker>
+                <el-form-item label="门牌号：" prop="houseCode" required >
+                    <el-input v-model="formInfo.houseCode" placeholder="楼栋/单元/层户，例01010101"></el-input>
                 </el-form-item>
-                <el-form-item label="结束时间" prop="endTime" required>
-                    <el-date-picker
-                            value-format="yyyy-MM-dd hh:mm:ss"
-                            v-model="formInfo.endTime"
-                            type="datetime"
-                            placeholder="选择日期时间"
-                            default-time="12:00:00">
-                    </el-date-picker>
-                </el-form-item>-->
-                <el-form-item label="楼ID：" prop="buildingId" required>
-                    <el-input v-model="formInfo.buildingId"></el-input>
+                <el-form-item label="姓名：" prop="name" required>
+                    <el-input v-model="formInfo.name"></el-input>
                 </el-form-item>
-                <el-form-item label="楼栋：" prop="buildingName" required>
-                    <el-input v-model="formInfo.buildingName"></el-input>
-                </el-form-item>
-                <el-form-item label="单元：" prop="unit" required>
-                    <el-input v-model="formInfo.unit"></el-input>
-                </el-form-item>
-                <el-form-item label="楼层：" prop="floor" required>
-                    <el-input v-model="formInfo.floor"></el-input>
-                </el-form-item>
-                <el-form-item label="门牌号：" prop="houseCode" required>
-                    <el-input v-model="formInfo.houseCode"></el-input>
-                </el-form-item>
-                <el-form-item label="是否入住" prop="isLive" required>
+                <el-form-item label="性别：" prop="sex" required>
                     <el-switch
-                            v-model="formInfo.isLive"
+                            v-model="formInfo.sex"
+                            active-color="#409EFF"
+                            inactive-color="#F56C6C"
+                            active-text="男"
+                            inactive-text="女">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="身份号：" prop="idCard" required>
+                    <el-input v-model="formInfo.idCard"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号：" prop="telephone" required>
+                    <el-input v-model="formInfo.telephone"></el-input>
+                </el-form-item>
+                <el-form-item label="是否户主" prop="isMain" required>
+                    <el-switch
+                            v-model="formInfo.isMain"
                             active-color="#13ce66"
                             inactive-color="#ff4949">
                     </el-switch>
                 </el-form-item>
-                <el-form-item label="面积：" prop="area" required>
-                    <el-input v-model="formInfo.area"></el-input>
+                <el-form-item label="类型：" prop="type" required>
+                    <el-switch
+                            v-model="formInfo.type"
+                            active-color="#ff4949"
+                            inactive-color="#13ce66"
+                            active-text="租用"
+                            inactive-text="购买">
+                    </el-switch>
                 </el-form-item>
-                <el-form-item label="描述：" prop="area" required>
-                    <el-input v-model="formInfo.description"></el-input>
+                <el-form-item label="职业：" prop="profession" required>
+                    <el-input v-model="formInfo.profession"></el-input>
                 </el-form-item>
-                <!--<el-form-item label="业主ID" prop="ownerId" >
-                    <el-input v-model="formInfo.ownerId"></el-input>
+                <el-form-item label="描述：" prop="remark" required>
+                    <el-input v-model="formInfo.remark"></el-input>
                 </el-form-item>
-                <el-form-item label="业主姓名" prop="ownerName" >
-                    <el-input v-model="formInfo.ownerName"></el-input>
+                <el-form-item label="入住时间" prop="createTime" required>
+                    <el-date-picker
+                            value-format="yyyy-MM-dd hh:mm:ss"
+                            v-model="formInfo.createTime"
+                            type="datetime"
+                            placeholder="选择日期时间"
+                            default-time="12:00:00">
+                    </el-date-picker>
                 </el-form-item>
-                <el-form-item label="业主TEL" prop="ownerTel" >
-                    <el-input v-model="formInfo.ownerTel"></el-input>
-                </el-form-item>-->
-                <!--<el-form-item label="入住类型" prop="kind" required>
-                    <el-input v-model="formInfo.kind"></el-input>
+                <el-form-item label="生日" prop="birthday" required>
+                    <el-date-picker
+                            value-format="yyyy-MM-dd hh:mm:ss"
+                            v-model="formInfo.birthday"
+                            type="datetime"
+                            placeholder="选择日期时间"
+                            default-time="12:00:00">
+                    </el-date-picker>
                 </el-form-item>
-                <el-form-item label="类型解释" prop="kindParam" required>
-                    <el-input v-model="formInfo.kindParam"></el-input>
-                </el-form-item>-->
+
                 <el-form-item style="text-align: right;">
                     <el-button type="primary" @click="submitForm('formInfo')"
                     >确定</el-button
@@ -88,7 +89,7 @@
 
 <script>
     export default {
-        name: "UpdateHouse",
+        name: "UpdateOwner",
         props: {
             dialogTitle: {
                 type: String,
@@ -115,29 +116,28 @@
             submitForm(formName) {
                 const that = this;
                 const params = Object.assign(that.formInfo, {});
+
                 that.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let url = '/house/update';
+                        let url = '/owner/update';
                         if (!that.handelType){
-                            url ='/house/add';
+                            url ='/owner/add';
                         }
                         // 走保存请求
                         that.$http.post(url,{
                             id: params.id,
-                            buildingId: params.buildingId,
-                            buildingName: params.buildingName,
-                            unit: params.unit,
-                            floor: params.floor,
                             houseCode: params.houseCode,
-                            isLive: params.isLive,
-                            area: params.area,
-                            description: params.description,
-                            /*ownerId: params.ownerId,
-                            ownerName: params.ownerName,
-                            ownerTel: params.ownerTel,*/
-                           /* kind: params.kind,
-                            startTime: params.startTime,
-                            endTime: params.endTime,*/
+                            name: params.name,
+                            sex: params.sex,
+                            idCard: params.idCard,
+                            telephone: params.telephone,
+                            isMain: params.isMain,
+                            type: params.type,
+                            profession: params.profession,
+                            remark: params.remark,
+                            createTime: params.createTime,
+                            updateTime: params.updateTime,
+                            birthday: params.birthday,
                         }).then(res => {
                             if(res.errorCode == '200'){
                                 that.$message({

@@ -10,8 +10,8 @@
     z-index:11;
     width: 100%"
     >
-        <el-menu-item index="" @click="changeshowbar" style="width: 125px;"
-        >XX物业系统</el-menu-item
+        <el-menu-item index="" @click="changeshowbar" style="width: 140px;"
+        >盛世小区物业系统</el-menu-item
         >
 
         <el-submenu index="">
@@ -74,9 +74,9 @@
                 // 在Vue中this始终指向Vue，但axios中this为undefined
                 // 通过 let that = this
                 // 将this保存在that中，再在函数中使用that均可
-                /*axios
+                this.$http
                 // eslint-disable-next-line no-undef
-                    .get(ylz_conf.BaseUrl + "/api/logout")
+                    .get("/logout")
                     .catch(function(error) {
                         console.log("服务端错误改为本地强行注销：", error);
                     })
@@ -96,7 +96,7 @@
                             eid: null
                         };
                         that.$router.push("/login");
-                    });*/
+                    });
             },
             handleSelect(key, keyPath) {
                 // 新标签页跳转关于
