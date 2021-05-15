@@ -16,6 +16,15 @@
         <HouseLive
                 v-if="this.$route.path === '/dashboard/houseLive'">
         </HouseLive>
+        <Parking
+                v-if="this.$route.path === '/dashboard/parking'">
+        </Parking>
+        <ParkingUse
+                v-if="this.$route.path === '/dashboard/parkingUse'">
+        </ParkingUse>
+        <ParkingLog
+                v-if="this.$route.path === '/dashboard/parkingLog'">
+        </ParkingLog>
     </el-main>
 </template>
 
@@ -26,6 +35,9 @@
     import Error from "./dashbord/Error";
     import Owner from "./dashbord/Owner";
     import HouseLive from "./dashbord/HouseLive";
+    import Parking from "./dashbord/Parking";
+    import ParkingLog from "./dashbord/ParkingLog";
+    import ParkingUse from "./dashbord/ParkingUse";
     export default {
         name: "DashContent",
         props: ["screenWidth", "screenHeight", "showdelete", "showeidt"],
@@ -36,6 +48,9 @@
             Error,
             Owner,
             HouseLive,
+            Parking,
+            ParkingLog,
+            ParkingUse
         },
         created() {}
     }

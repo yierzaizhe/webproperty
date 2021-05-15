@@ -40,13 +40,14 @@
                     router
                     default-active="1"
                     class="el-menu-vertical-demo"
-                    :unique-opend="true"
+                    :unique-opend=true
                     @open="handleOpen"
                     @close="handleClose"
                     background-color="#545c64"
                     text-color="#fff"
                     active-text-color="#ffd04b"
-                    style="width: 145px; position: fixed; height: 100%; padding-top: 5px;min-width: 145px">
+                    style="width: 145px; position: fixed; height: 100vh; padding-top: 5px;min-width: 145px;
+                    overflow: scroll">
                 <el-menu-item index="show">
                     <i class="el-icon-s-data"></i>
                     控制台
@@ -82,7 +83,7 @@
                     </template>
                     <el-menu-item-group>
                         <el-menu-item index="parking">车位管理</el-menu-item>
-                        <el-menu-item index="parkingUSe">车位使用</el-menu-item>
+                        <el-menu-item index="parkingUse">车位使用</el-menu-item>
                         <el-menu-item index="parkingLog">收费流水</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
@@ -120,5 +121,8 @@
 <style scoped>
 .el-menu-item{
     min-width: 145px
+}
+::-webkit-scrollbar {
+    width: 0;    height: 0;
 }
 </style>
